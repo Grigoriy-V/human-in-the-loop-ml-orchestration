@@ -1,0 +1,15 @@
+# Keep only the reproducible Codex policy files.
+.codex/*
+!.codex/config.toml
+!.codex/agents/
+!.codex/agents/*.toml
+.agents/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+*.tmp
+*.lock
+*.log
