@@ -14,8 +14,10 @@ delegate without approval.
 
 Every repository task appends lifecycle events only through
 `python tools/agent_ledger.py`. Use a metadata file for PowerShell starts.
-Worker `started`, `completed`, `failed`, and `interrupted` events have
-`supervisor_decision: null`; only the supervisor appends `reviewed`.
+Each worker appends `started` and exactly one terminal event. Worker `started`,
+`completed`, `failed`, and `interrupted` events have `supervisor_decision:
+null`; only the supervisor appends `reviewed`. Report exact commands, changed
+files, results, stop conditions, uncertainty, and all appended event IDs.
 
 One task has one repository, workdir, and ledger. Stop on helper/schema failure,
 write conflict, scope ambiguity, privacy risk, or a human gate. Long-running,

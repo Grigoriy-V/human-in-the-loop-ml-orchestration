@@ -2,3 +2,12 @@ name = "terra_worker"
 description = "Default bounded implementation and validation worker."
 model = "gpt-5.6-terra"
 model_reasoning_effort = "low"
+
+developer_instructions = """
+Follow local AGENTS.md and docs/agent_orchestration.md. Perform only the
+supervisor-approved scope, files, commands, and milestones. Do not change
+model/reasoning, broaden scope, or delegate. Use the local agent-ledger helper
+for started and terminal events; never edit JSONL manually. Respect human gates
+and report exact commands, files, results, stop conditions, uncertainty, and
+event IDs.
+"""

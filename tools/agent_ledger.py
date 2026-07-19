@@ -1,10 +1,11 @@
 """Append-only, schema-checked agent ledger helper."""
-import argparse, json, os, re, sys, uuid
+import argparse, datetime as dt, json, os, re, sys, uuid
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]; SCHEMA=ROOT/'reports'/'agent_execution_ledger.schema.json'
+SENSITIVE_PATTERN=re.compile(r'(?i)(?:api[_-]?ke' + r'y|sec' + r'ret|password|authorization)\s*[:=]\s*\S+')
 class LedgerError(ValueError): pass
 def utc(): return datetime.now(timezone.utc).isoformat().replace('+00:00','Z')
 def load_schema(): return json.loads(SCHEMA.read_text(encoding='utf-8'))
@@ -13,8 +14,20 @@ def read_events(path):
     return [json.loads(x) for x in path.read_text(encoding='utf-8').splitlines() if x.strip()]
 def validate(event):
     check_schema(event,load_schema())
-    if event['event_type'] in {'started','completed','failed','interrupted'} and event['supervisor_decision'] is not None: raise LedgerError('worker event cannot decide')
+    try: dt.datetime.fromisoformat(event['timestamp_utc'].replace('Z','+00:00'))
+    except (AttributeError, ValueError) as exc: raise LedgerError('timestamp_utc must be RFC 3339') from exc
+    expected={'started':'started','completed':'completed','failed':'failed','interrupted':'interrupted','reviewed':'reviewed','correction':'corrected'}
+    if event['status'] != expected[event['event_type']]: raise LedgerError('event_type/status mismatch')
+    if event['event_type'] in {'started','completed','failed','interrupted','correction'} and event['supervisor_decision'] is not None: raise LedgerError('worker or correction event cannot decide')
+    if event['event_type']=='reviewed' and event['supervisor_decision'] not in {'accept','reject','change'}: raise LedgerError('review requires accept, reject, or change')
     if any(not isinstance(x,str) or re.match(r'^(?:[A-Za-z]:|/|\\)',x) for x in event['files_changed']): raise LedgerError('absolute file path')
+    def safe(value):
+        if isinstance(value,dict):
+            for item in value.values(): safe(item)
+        elif isinstance(value,list):
+            for item in value: safe(item)
+        elif isinstance(value,str) and SENSITIVE_PATTERN.search(value): raise LedgerError('secret-like value')
+    safe(event)
 def lifecycle(events,event):
     all_events=events+[event]; state={}
     for x in all_events:
@@ -80,7 +93,7 @@ def base(meta):
     if not isinstance(meta,dict) or any(k not in meta for k in required): raise LedgerError('start metadata missing required field')
     return {**meta,'schema_version':'1.0','event_id':str(uuid.uuid4()),'timestamp_utc':utc(),'event_type':'started','status':'started','supervisor_decision':None,'outcome_summary':None,'duration_seconds':None}
 def main(argv=None):
- p=argparse.ArgumentParser(); p.add_argument('--ledger',type=Path,default=ROOT/'reports'/'agent_execution_ledger.jsonl'); p.add_argument('--dry-run',action='store_true'); s=p.add_subparsers(dest='cmd',required=True); a=s.add_parser('start');g=a.add_mutually_exclusive_group(required=True);g.add_argument('--metadata-json');g.add_argument('--metadata-file',type=Path); a=s.add_parser('terminal');a.add_argument('--run-id',required=True);a.add_argument('--status',choices=['completed','failed','interrupted'],required=True);a.add_argument('--outcome-summary',required=True);a.add_argument('--files-changed-json',required=True);a.add_argument('--commands-json',required=True);a.add_argument('--notes',default='Created by tools/agent_ledger.py.'); a=s.add_parser('review');a.add_argument('--run-id',required=True);a.add_argument('--decision',choices=['accept','reject','change'],required=True);a.add_argument('--outcome-summary',required=True);a.add_argument('--reviewer-agent-name',required=True);a.add_argument('--reviewer-model',required=True);a.add_argument('--reviewer-reasoning',required=True);a.add_argument('--parent-task',required=True);a.add_argument('--notes',default='Created by tools/agent_ledger.py.');s.add_parser('validate'); args=p.parse_args(argv)
+ p=argparse.ArgumentParser(); p.add_argument('--ledger',type=Path,default=ROOT/'reports'/'agent_execution_ledger.jsonl'); p.add_argument('--dry-run',action='store_true'); s=p.add_subparsers(dest='cmd',required=True); a=s.add_parser('start');g=a.add_mutually_exclusive_group(required=True);g.add_argument('--metadata-json');g.add_argument('--metadata-file',type=Path); a=s.add_parser('terminal');a.add_argument('--run-id',required=True);a.add_argument('--status',choices=['completed','failed','interrupted'],required=True);a.add_argument('--outcome-summary',required=True);a.add_argument('--files-changed-json',required=True);a.add_argument('--commands-json',required=True);a.add_argument('--notes',default='Created by tools/agent_ledger.py.'); a=s.add_parser('review');a.add_argument('--run-id',required=True);a.add_argument('--decision',choices=['accept','reject','change'],required=True);a.add_argument('--outcome-summary',required=True);a.add_argument('--reviewer-agent-name',required=True);a.add_argument('--reviewer-model',required=True);a.add_argument('--reviewer-reasoning',required=True);a.add_argument('--parent-task',required=True);a.add_argument('--notes',default='Created by tools/agent_ledger.py.');a=s.add_parser('correction');a.add_argument('--event-id',required=True);a.add_argument('--outcome-summary',required=True);a.add_argument('--notes',required=True);s.add_parser('validate'); args=p.parse_args(argv)
  try:
   events=read_events(args.ledger)
   if args.cmd=='validate':
@@ -88,15 +101,22 @@ def main(argv=None):
    for e in events: validate(e); lifecycle(prior,e); prior.append(e)
    print(f'valid: {len(events)} events'); return 0
   if args.cmd=='start': event=base(json.loads(args.metadata_file.read_text(encoding='utf-8') if args.metadata_file else args.metadata_json))
-  else:
+  elif args.cmd in {'terminal','review'}:
    old=[x for x in events if x['agent_run_id']==args.run_id]; starts=[x for x in old if x['event_type']=='started']
    if len(starts)!=1: raise LedgerError('expected exactly one start')
    seed={k:starts[0][k] for k in ('schema_version','agent_run_id','parent_task','agent_name','requested_model','requested_reasoning','task_type','roadmap_step','scope_summary','constraints','git_commit_before','git_commit_after','ml_ledger_event_ids')}; event={**seed,'event_id':str(uuid.uuid4()),'timestamp_utc':utc(),'notes':args.notes}
    if args.cmd=='terminal':
     commands=json.loads(args.commands_json); files=json.loads(args.files_changed_json)
-    if not isinstance(commands,list) or not commands: raise LedgerError('terminal requires actual commands')
-    event.update(event_type=args.status,status=args.status,commands=commands,files_changed=files,outcome_summary=args.outcome_summary,supervisor_decision=None,duration_seconds=max(0,(datetime.now(timezone.utc)-datetime.fromisoformat(starts[0]['timestamp_utc'].replace('Z','+00:00'))).total_seconds()))
+    if not isinstance(commands,list) or not commands or not all(isinstance(item,str) and item.strip() for item in commands): raise LedgerError('terminal requires non-empty actual commands')
+    if not isinstance(files,list) or not all(isinstance(item,str) for item in files): raise LedgerError('terminal requires explicit changed-file array')
+    duration=(datetime.now(timezone.utc)-datetime.fromisoformat(starts[0]['timestamp_utc'].replace('Z','+00:00'))).total_seconds()
+    if duration<=0: raise LedgerError('terminal duration must be positive')
+    event.update(event_type=args.status,status=args.status,commands=commands,files_changed=files,outcome_summary=args.outcome_summary,supervisor_decision=None,duration_seconds=duration)
    else: event.update(event_type='reviewed',status='reviewed',commands=[],files_changed=[],outcome_summary=args.outcome_summary,supervisor_decision=args.decision,duration_seconds=None,agent_name=args.reviewer_agent_name,requested_model=args.reviewer_model,requested_reasoning=args.reviewer_reasoning,parent_task=args.parent_task)
+  else:
+   prior=[x for x in events if x['event_id']==args.event_id]
+   if len(prior)!=1: raise LedgerError('correction requires one existing event id')
+   event={**prior[0],'event_id':str(uuid.uuid4()),'timestamp_utc':utc(),'event_type':'correction','status':'corrected','supervisor_decision':None,'outcome_summary':args.outcome_summary,'notes':args.notes}
   append(args.ledger,event,args.dry_run); print(json.dumps(event,ensure_ascii=False,separators=(',',':'))); return 0
  except (ValueError,LedgerError,OSError) as e: print(f'error: {e}',file=sys.stderr); return 2
 if __name__=='__main__': raise SystemExit(main())

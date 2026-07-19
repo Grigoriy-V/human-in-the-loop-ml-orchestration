@@ -12,11 +12,13 @@ Use a metadata file for the first ledger event:
 python tools/agent_ledger.py start --metadata-file task-start.json
 ```
 
-Core v0.2 uses bundled validators for the schema vocabulary shipped here
-(`required`, types, properties, arrays, enums, patterns, constants and the
-conditional forms used by the ledger). It is not a claim of full Draft 2020-12
-implementation. A stale `.lock` sidecar fails closed; remove it only after
-confirming no writer process remains.
+The local helper generates UTC timestamps and event IDs, validates schema and
+lifecycle transitions before append, requires explicit terminal commands and
+changed-file evidence, and rejects absolute paths and secret-like values. It
+uses an exclusive sidecar lock; a stale `.lock` fails closed and may be removed
+only after confirming no writer process remains. Its bundled validator supports
+the schema vocabulary used here; it is not a claim of full Draft 2020-12
+implementation.
 
 Bootstrap sources live under `templates/base` and declared adapter overlays.
 Official bootstrap requires a clean committed Core checkout. The emitted pin

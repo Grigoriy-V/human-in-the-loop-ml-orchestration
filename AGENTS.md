@@ -1,9 +1,11 @@
 # Core Agent Rules
 
-The root/main agent is supervisor-only: it defines bounded work, reviews
-evidence, and records the final decision. Workers perform implementation,
-inspection, tests, and other approved commands. Each task has one target
-repository, one workdir, and one agent ledger.
+The root/main agent is supervisor-only: it reads local evidence and Git state,
+defines bounded work, reviews evidence, and records the final decision. Every
+worker task specifies its scope, one target repository/workdir/agent ledger,
+allowed files or artifacts, allowed commands or milestones, stop conditions,
+reporting requirements, and acceptance criteria. Workers perform only the
+approved implementation, inspection, tests, and other commands.
 
 Use `luna_clerk` with reasoning `none` only for deterministic clerical work,
 `terra_worker` at `low` for normal bounded implementation/validation, and
@@ -11,10 +13,13 @@ Use `luna_clerk` with reasoning `none` only for deterministic clerical work,
 or high-risk work. Workers do not change model, reasoning, scope, or delegate
 without approval.
 
-Use `python tools/agent_ledger.py` for every ledger append; never edit JSONL
-history manually. Worker lifecycle events have `supervisor_decision: null`;
-only a supervisor appends `reviewed`. Stop on helper, schema, scope, privacy,
-or write-conflict failures.
+Use one write-heavy worker for overlapping mutable paths or artifacts. Use
+`python tools/agent_ledger.py` for every ledger append; never edit JSONL
+history manually. Every worker task appends `started` and exactly one terminal
+event; only a supervisor appends `reviewed`. Worker lifecycle events have
+`supervisor_decision: null`. Stop on helper, schema, scope, privacy, or
+write-conflict failures and report exact commands, changed files, results,
+stop conditions, uncertainty, and all appended event IDs.
 
 Project adapters add domain-specific rules inside clearly marked adapter
 sections. Core templates must not make domain claims. Never sync private
