@@ -1,7 +1,30 @@
 # Project adapter contract
 
-An adapter is self-contained: its own `AGENTS.md`, `.codex`, helpers, schemas,
-ledgers, roadmap, log, Core pin, and managed-file declaration.
+An adapter is self-contained at runtime. A fresh Codex chat loads only the
+applicable `AGENTS.md` and project configuration found for the repository it
+opens. It does not inherit live instructions from a sibling Core checkout,
+another ML repository, or a previous chat.
+
+Every adapter must therefore physically contain its complete common
+supervisor/worker/audit rules, Luna/Terra/Sol profiles, local tools and
+documentation, schemas, ledgers, roadmap, log, Core pin, and managed-file
+declaration. Core is a reference, provenance record, and project template. It
+is never required to be present or readable while an adapter runs.
+
+## Local common and domain responsibilities
+
+| Responsibility | Required locally in every adapter | Generative ML adapter owns | Classical ML adapter owns |
+| --- | --- | --- | --- |
+| Agent control | Supervisor-only decisions, bounded workers, Luna `none`, Terra `low`, Sol `high`, one local agent helper, audit evidence, and human gates | Same common local contract | Same common local contract |
+| Data protocol | Local provenance and privacy rules | Dataset preparation, caches, checkpoint lineage, and sampling inputs | Dataset identity, source/license, target and positive class, label timing, leakage audit, and frozen split protocol |
+| Modelling protocol | Human approval for long or consequential ML operations | Generic diffusion training/resume/sampling evidence and image-generation metrics | Fold-safe `sklearn` Pipeline, cross-validation, baselines, calibration, and decision-threshold protocol |
+| Experiment evidence | Append-only local evidence with actual commands, hashes, artifacts, results, and decisions | Dataset/cache/checkpoint/sampling/image-metric events through its local experiment mechanism | Classical dataset/split/pipeline/CV/calibration/threshold events through its domain experiment helper |
+
+Both ML adapters prohibit manual JSONL writes. Agent lifecycle events must use
+the adapter's local agent helper, and material experiment events must use the
+adapter's local experiment helper or documented local append API when that
+capability is available. A missing or failing required helper is a stop
+condition, not permission to patch ledger history.
 
 In v0.2 bootstrap, the entire immutable target-file inventory is declared in
 `core/managed_files.json` and pinned in `orchestration.lock.json`. Generic
