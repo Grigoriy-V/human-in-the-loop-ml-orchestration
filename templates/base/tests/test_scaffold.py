@@ -45,9 +45,13 @@ class ScaffoldTests(unittest.TestCase):
         }
         if lock["adapter_type"] == "generic":
             self.assertTrue(all(not (ROOT / path).exists() for path in classical))
+            self.assertTrue((ROOT / "PROJECT_ROADMAP.md").is_file())
+            self.assertFalse((ROOT / "ML_PROJECT_ROADMAP.md").exists())
         else:
             self.assertEqual(lock["adapter_type"], "classical_ml")
             self.assertTrue(all((ROOT / path).is_file() for path in classical))
+            self.assertFalse((ROOT / "PROJECT_ROADMAP.md").exists())
+            self.assertTrue((ROOT / "ML_PROJECT_ROADMAP.md").is_file())
 
     def test_mutable_evidence_is_not_managed(self):
         lock = json.loads(

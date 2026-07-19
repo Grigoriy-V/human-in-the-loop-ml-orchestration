@@ -1,8 +1,10 @@
 # Human-in-the-Loop Orchestration Core
 
-Core v0.2 is a candidate release for supervised, auditable project agents. It
-provides generic lifecycle governance, routing profiles, append-only agent
-evidence, canonical bootstrap templates, explicit adapter overlays, and
+Core v0.2 is an experimental personal proof of concept for supervised,
+auditable project agents. It targets nominal reproducibility for this
+workspace; it is not a production framework, a compatibility promise, or
+v1.0. It provides generic lifecycle governance, routing profiles, append-only
+agent evidence, canonical bootstrap templates, explicit adapter overlays, and
 machine-verifiable source provenance. It has no ML framework, dataset, GPU, or
 network dependency.
 
@@ -45,9 +47,14 @@ python tools/agent_ledger.py start --metadata-file task-start.json
 
 ## Candidate boundary
 
-This is a v0.2 candidate, not a v1.0 freeze. `sync_core.py` remains dry-run
-only. `--apply` intentionally returns exit 2 without mutation; conflict-aware
-version propagation and apply are deferred to a later reviewed milestone.
+This is an experimental personal v0.2 PoC, not a production framework or a
+v1.0 freeze. `sync_core.py` remains dry-run only and `--apply` intentionally
+returns exit 2 without mutation.
+
+Any future sync should first compute a deterministic hash/diff over the
+declared managed-file list. Only when differences exist may an agent be
+invoked to prepare a proposed change for manual approval. Automatic apply is
+out of scope.
 
 See the [v0.2 technical report](reports/core_v0_2_candidate.md) and the
 [multi-repository bootstrap case study](docs/case_studies/autonomous_multi_repo_bootstrap.md).

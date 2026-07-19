@@ -2,13 +2,16 @@
 
 ## Current status
 
-**Accepted as a v0.2.0 candidate.** Supervisor events
+**Accepted as an experimental personal v0.2.0 proof of concept.** Supervisor events
 `5d407234-db43-484c-86e9-7d6d61884765` and
 `5714c98f-e1d2-48c9-be15-46bdf9de05e3` accepted the implementation and the
-independent technical review. This acceptance does not freeze v1.0.
+independent technical review. The intended guarantee is nominal
+reproducibility for this workspace, not a production framework or compatibility
+promise. This acceptance does not freeze v1.0.
 
-The next milestone is a separate clean-commit release gate before any v1.0
-freeze decision. `sync_core.py --apply` remains deferred and unavailable.
+Future sync is limited to a proposed design: deterministic hash/diff over the
+declared managed files first, agent invocation only when differences exist,
+then manual approval. Automatic apply remains out of scope.
 
 ## Initial worker verdict
 

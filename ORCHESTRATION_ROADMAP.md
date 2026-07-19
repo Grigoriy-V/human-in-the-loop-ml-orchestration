@@ -13,10 +13,14 @@ Accepted in supervisor review. Next approved milestone: bootstrap a separate
 classical-ML/sklearn adapter, then verify umbrella-supervisor behavior. This
 closeout does not execute either action.
 
-## Later v1 gates
+## Experimental boundary and possible future sync
 
-Prove managed-section sync against two adapters; require conflict detection,
-clean-Git checks before writes, and human review before enabling `--apply`.
+v0.2 is a personal experimental proof of concept with nominal reproducibility,
+not a production framework or v1.0.
+
+Any future sync starts with a deterministic hash/diff over the declared
+managed-file list. An agent is invoked only when differences exist, and any
+proposed change requires manual approval. Automatic apply is out of scope.
 
 ## v0.2.0 candidate — accepted
 
@@ -31,6 +35,5 @@ The implementation and independent technical review were accepted in
 supervisor events `5d407234-db43-484c-86e9-7d6d61884765` and
 `5714c98f-e1d2-48c9-be15-46bdf9de05e3`.
 
-The next milestone is a separate release gate from a clean candidate commit
-before any v1.0 freeze decision. `sync_core.py --apply` remains deferred and
-unavailable.
+The next milestone is a single supervisor acceptance and clean candidate
+commit. This does not freeze v1.0. `sync_core.py --apply` remains unavailable.

@@ -205,6 +205,7 @@ def _git_provenance() -> str:
 
 
 def _copy(source: Path, destination: Path) -> None:
+    """Copy without decoding; managed callers verify exact byte equality."""
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, destination)
 

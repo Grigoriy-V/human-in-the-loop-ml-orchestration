@@ -26,6 +26,7 @@ REQUIRED = {
     ".codex/agents/luna_clerk.toml",
     ".codex/agents/terra_worker.toml",
     ".codex/agents/sol_specialist.toml",
+    ".gitattributes",
     ".gitignore",
     "AGENTS.md",
     "README.md",
@@ -39,6 +40,7 @@ REQUIRED = {
     "templates/adapters.json",
     "templates/adapters/generic/core/managed_files.json",
     "templates/adapters/classical_ml/core/managed_files.json",
+    "templates/base/.gitattributes",
     "templates/base/tools/agent_ledger.py",
     "templates/base/tools/validate_core_pin.py",
     "templates/base/tools/validate_orchestration.py",
@@ -196,10 +198,16 @@ def _validate_templates(root: Path, errors: list[str]) -> None:
                 "tests/test_classical_contract.py",
             }
             inventory = targets | mutable_targets
-            if adapter_type == "generic" and inventory & classical_paths:
-                raise ValueError("generic inventory leaks classical files")
-            if adapter_type == "classical_ml" and not classical_paths <= inventory:
-                raise ValueError("classical inventory is incomplete")
+            if adapter_type == "generic":
+                if inventory & classical_paths:
+                    raise ValueError("generic inventory leaks classical files")
+                if "PROJECT_ROADMAP.md" not in mutable_targets:
+                    raise ValueError("generic roadmap ownership is incomplete")
+            if adapter_type == "classical_ml":
+                if not classical_paths <= inventory:
+                    raise ValueError("classical inventory is incomplete")
+                if "PROJECT_ROADMAP.md" in inventory:
+                    raise ValueError("classical inventory has two roadmaps")
     except Exception as exc:
         errors.append(f"templates: {exc}")
 

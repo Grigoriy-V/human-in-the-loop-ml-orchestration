@@ -62,6 +62,13 @@ generic/classical target suites, pins, lifecycle, experiment contract, and
 sync refusal passed independent review. Technical verdict: **accept**. See
 `reports/core_v0_2_candidate.md`.
 
+## 2026-07-19 — Core v0.2.0 clean-commit release gate
+
+A clean local Windows clone of committed HEAD failed immutable-manifest
+validation: all 60 hashes differed because checkout CRLF bytes did not match
+the LF working-tree hashes used to build the manifest. Release verdict:
+**changes required**. See `reports/core_v0_2_release_gate.md`.
+
 ## 2026-07-19 — Core v0.2 candidate template promotion
 
 Bootstrap project sources moved into canonical `templates/base` plus declared
@@ -90,3 +97,38 @@ The next milestone is a separate clean-commit release gate before any v1.0
 freeze decision. `sync_core.py --apply` remains deferred and unavailable. No
 additional test suite, ML, data, network, tag, or push operation ran during
 this closeout.
+
+## 2026-07-19 — Core v0.2.0 CRLF portability rework
+
+Added canonical LF checkout policy to Core and generated adapters after the
+clean-clone release gate found 60/60 immutable hash mismatches under
+`core.autocrlf=true`. Common binary formats are explicitly excluded from text
+and eol conversion; managed bootstrap copies remain raw-byte-preserving and
+hash-equal.
+
+The focused autocrlf clone matrix passed with a clean clone, all 62 Core
+manifest hashes, generic `25 managed / 3 mutable`, classical
+`29 managed / 5 mutable`, local and explicit pins, exact copy relations,
+CRLF-tamper rejection, and byte-stable binary handling. The full 10-test Core
+suite passed. Decision: ready for targeted independent re-review, not accepted
+as a release. Version remains `0.2.0`; sync apply remains unavailable. See
+`reports/core_v0_2_release_gate.md`.
+
+No adapter write, ML/data operation, network action, commit, tag, or push ran.
+
+## 2026-07-19 — Core v0.2.0 personal-PoC finalization
+
+Labeled v0.2.0 as an experimental personal proof of concept with nominal
+reproducibility, not a production framework or v1.0. Documented future sync as
+deterministic managed-list hash/diff first, agent invocation only for detected
+differences, and manual approval with no automatic apply.
+
+Generated roadmap ownership is now exclusive: generic has only
+`PROJECT_ROADMAP.md`, classical has only `ML_PROJECT_ROADMAP.md`, and Core
+retains `ORCHESTRATION_ROADMAP.md`. Inventories are generic
+`25 managed / 3 mutable` and classical `29 managed / 4 mutable`.
+
+The full 10-test Core suite and focused autocrlf clean-clone matrix each passed
+once. Decision: hand off the dirty PoC state for one supervisor acceptance and
+one later commit. Version remains `0.2.0`; no adapter write, production commit,
+tag, push, network, ML, or data operation ran.

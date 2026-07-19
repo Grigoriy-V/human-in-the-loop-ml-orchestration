@@ -94,6 +94,10 @@ class CoreV02Tests(unittest.TestCase):
             "reports/agent_execution_ledger.jsonl", manifest["owned_files"]
         )
         self.assertIn("templates/adapters.json", manifest["owned_files"])
+        self.assertIn(".gitattributes", manifest["owned_files"])
+        self.assertIn(
+            "templates/base/.gitattributes", manifest["owned_files"]
+        )
         self.assertIn(
             "templates/adapters/classical_ml/tools/experiment_ledger.py",
             manifest["owned_files"],
@@ -144,7 +148,7 @@ class CoreV02Tests(unittest.TestCase):
     def test_generic_and_classical_isolated_bootstrap_inventories_and_suites(self):
         generic = self.bootstrap("generic")
         classical = self.bootstrap("classical_ml")
-        for target, expected_count in ((generic, 24), (classical, 28)):
+        for target, expected_count in ((generic, 25), (classical, 29)):
             lock = json.loads(
                 (target / "orchestration.lock.json").read_text(encoding="utf-8")
             )
@@ -171,12 +175,164 @@ class CoreV02Tests(unittest.TestCase):
         }
         self.assertTrue(all(not (generic / path).exists() for path in classical_paths))
         self.assertTrue(all((classical / path).is_file() for path in classical_paths))
+        self.assertTrue((generic / "PROJECT_ROADMAP.md").is_file())
+        self.assertFalse((generic / "ML_PROJECT_ROADMAP.md").exists())
+        self.assertFalse((classical / "PROJECT_ROADMAP.md").exists())
+        self.assertTrue((classical / "ML_PROJECT_ROADMAP.md").is_file())
         self.assertFalse((generic / "reports/experiment_ledger.schema.json").exists())
         self.assertNotIn("experiment_ledger", (generic / "AGENTS.md").read_text())
         self.assertIn("semi-automatic", (classical / "AGENTS.md").read_text())
         self.assertIn('model_reasoning_effort = "none"', (classical / ".codex/agents/luna_clerk.toml").read_text())
         self.assertIn('model_reasoning_effort = "low"', (classical / ".codex/agents/terra_worker.toml").read_text())
         self.assertIn('model_reasoning_effort = "high"', (classical / ".codex/agents/sol_specialist.toml").read_text())
+
+    def test_autocrlf_clone_release_matrix_and_binary_policy(self):
+        clone = self.workspace / "autocrlf-core"
+        self.execute(
+            [
+                "git",
+                "-c",
+                "core.autocrlf=true",
+                "clone",
+                "--quiet",
+                "--no-hardlinks",
+                str(self.snapshot),
+                str(clone),
+            ]
+        )
+        configured = self.execute(
+            ["git", "-C", clone, "config", "--bool", "core.autocrlf"]
+        ).stdout.strip()
+        self.assertEqual(configured, "true")
+        self.assertEqual(
+            self.execute(["git", "-C", clone, "status", "--porcelain"]).stdout,
+            "",
+        )
+        self.execute(
+            [sys.executable, "tools/validate_orchestration.py"], cwd=clone
+        )
+
+        manifest = json.loads(
+            (clone / "orchestration_manifest.json").read_text(encoding="utf-8")
+        )
+        for relative, expected_hash in manifest["owned_files"].items():
+            actual_hash = hashlib.sha256((clone / relative).read_bytes()).hexdigest()
+            self.assertEqual(actual_hash, expected_hash, relative)
+
+        for adapter_type, expected_count in (
+            ("generic", 25),
+            ("classical_ml", 29),
+        ):
+            target = self.workspace / f"autocrlf-{adapter_type}"
+            self.execute(
+                [
+                    sys.executable,
+                    "tools/bootstrap_project.py",
+                    "--target",
+                    str(target),
+                    "--adapter-type",
+                    adapter_type,
+                    "--adapter-name",
+                    f"Autocrlf {adapter_type}",
+                ],
+                cwd=clone,
+            )
+            lock = json.loads(
+                (target / "orchestration.lock.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(len(lock["managed_files"]), expected_count)
+            for entry in lock["managed_files"]:
+                source_bytes = (clone / entry["core_path"]).read_bytes()
+                target_bytes = (target / entry["target_path"]).read_bytes()
+                self.assertEqual(target_bytes, source_bytes, entry["target_path"])
+                self.assertEqual(
+                    hashlib.sha256(target_bytes).hexdigest(),
+                    entry["target_sha256"],
+                )
+            self.target(target, "tools/validate_core_pin.py")
+            self.target(
+                target,
+                "tools/validate_core_pin.py",
+                "--core-root",
+                str(clone),
+            )
+            self.target(target, "tools/validate_orchestration.py")
+            if adapter_type == "generic":
+                self.assertTrue((target / "PROJECT_ROADMAP.md").is_file())
+                self.assertFalse((target / "ML_PROJECT_ROADMAP.md").exists())
+            else:
+                self.assertFalse((target / "PROJECT_ROADMAP.md").exists())
+                self.assertTrue((target / "ML_PROJECT_ROADMAP.md").is_file())
+
+        tampered = self.workspace / "autocrlf-generic" / "README.md"
+        original = tampered.read_bytes()
+        self.assertIn(b"\n", original)
+        tampered.write_bytes(original.replace(b"\n", b"\r\n", 1))
+        self.target(
+            self.workspace / "autocrlf-generic",
+            "tools/validate_core_pin.py",
+            expected=2,
+        )
+
+        binary_source = self.workspace / "binary-policy-source"
+        binary_clone = self.workspace / "binary-policy-clone"
+        binary_source.mkdir()
+        shutil.copy2(
+            self.snapshot / ".gitattributes",
+            binary_source / ".gitattributes",
+        )
+        payload = b"\x00\x0a\xff\r\nbinary\x00payload"
+        (binary_source / "payload.bin").write_bytes(payload)
+        self.execute(["git", "init", "-q", binary_source])
+        self.execute(
+            ["git", "-C", binary_source, "config", "user.email", "test@example.invalid"]
+        )
+        self.execute(
+            ["git", "-C", binary_source, "config", "user.name", "Binary Policy Test"]
+        )
+        self.execute(["git", "-C", binary_source, "config", "core.autocrlf", "true"])
+        self.execute(["git", "-C", binary_source, "add", "."])
+        self.execute(
+            ["git", "-C", binary_source, "commit", "-q", "-m", "binary fixture"]
+        )
+        self.execute(
+            [
+                "git",
+                "-c",
+                "core.autocrlf=true",
+                "clone",
+                "--quiet",
+                "--no-hardlinks",
+                str(binary_source),
+                str(binary_clone),
+            ]
+        )
+        self.assertEqual((binary_clone / "payload.bin").read_bytes(), payload)
+        self.assertEqual(
+            self.execute(
+                ["git", "-C", binary_clone, "status", "--porcelain"]
+            ).stdout,
+            "",
+        )
+        attributes = self.execute(
+            [
+                "git",
+                "-C",
+                binary_clone,
+                "check-attr",
+                "text",
+                "eol",
+                "--",
+                "payload.bin",
+            ]
+        ).stdout
+        self.assertIn("payload.bin: text: unset", attributes)
+        self.assertIn("payload.bin: eol: unset", attributes)
+
+        self.assertEqual(
+            self.execute(["git", "-C", clone, "status", "--porcelain"]).stdout,
+            "",
+        )
 
     def test_full_target_lifecycle_uses_powershell_metadata_file(self):
         target = self.bootstrap("generic")

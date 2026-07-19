@@ -16,12 +16,12 @@ BASE_REQUIRED = {
     ".codex/agents/luna_clerk.toml",
     ".codex/agents/terra_worker.toml",
     ".codex/agents/sol_specialist.toml",
+    ".gitattributes",
     ".gitignore",
     "AGENTS.md",
     "README.md",
     "VERSION",
     "PROJECT_LOG.md",
-    "PROJECT_ROADMAP.md",
     "orchestration.lock.json",
     "core/managed_files.json",
     "core/orchestration_lock.schema.json",
@@ -78,10 +78,14 @@ def validate(root: Path = ROOT) -> list[str]:
 
     adapter_type = lock["adapter_type"]
     if adapter_type == "classical_ml":
+        if (root / "PROJECT_ROADMAP.md").exists():
+            errors.append("classical adapter contains generic PROJECT_ROADMAP.md")
         for relative in sorted(CLASSICAL_REQUIRED):
             if not (root / relative).is_file():
                 errors.append(f"missing {relative}")
     elif adapter_type == "generic":
+        if not (root / "PROJECT_ROADMAP.md").is_file():
+            errors.append("missing PROJECT_ROADMAP.md")
         for relative in sorted(CLASSICAL_REQUIRED):
             if (root / relative).exists():
                 errors.append(f"generic adapter contains classical file {relative}")

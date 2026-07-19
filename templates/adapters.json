@@ -30,11 +30,6 @@
           "mode": "copy"
         },
         {
-          "target_path": "PROJECT_ROADMAP.md",
-          "core_path": "templates/base/PROJECT_ROADMAP.md",
-          "mode": "copy"
-        },
-        {
           "target_path": "reports/agent_execution_ledger.jsonl",
           "core_path": null,
           "mode": "empty"

@@ -4,6 +4,7 @@
   "files": [
     {"target_path": "README.md", "core_path": "templates/base/README.md", "relationship": "base_copy"},
     {"target_path": "AGENTS.md", "core_path": "templates/base/AGENTS.md", "relationship": "base_copy"},
+    {"target_path": ".gitattributes", "core_path": "templates/base/.gitattributes", "relationship": "base_copy"},
     {"target_path": ".gitignore", "core_path": "templates/base/.gitignore", "relationship": "base_copy"},
     {"target_path": ".codex/config.toml", "core_path": "templates/base/.codex/config.toml", "relationship": "base_copy"},
     {"target_path": ".codex/agents/luna_clerk.toml", "core_path": "templates/base/.codex/agents/luna_clerk.toml", "relationship": "base_copy"},

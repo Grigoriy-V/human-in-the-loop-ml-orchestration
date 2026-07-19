@@ -1,0 +1,19 @@
+# Keep immutable adapter text bytes stable across every checkout.
+* text=auto eol=lf
+
+# Never line-ending-convert common binary payloads.
+*.bin binary -eol
+*.ckpt binary -eol
+*.gif binary -eol
+*.gz binary -eol
+*.jpeg binary -eol
+*.jpg binary -eol
+*.npy binary -eol
+*.npz binary -eol
+*.parquet binary -eol
+*.pdf binary -eol
+*.png binary -eol
+*.pt binary -eol
+*.pth binary -eol
+*.safetensors binary -eol
+*.zip binary -eol
