@@ -32,3 +32,7 @@ No GPU, dataset, training, evaluation, or network call is used.
 v0.1 bootstrap is deliberately conservative. `sync_core.py` validates and
 prints a dry-run only; it does not mutate adapters until a future release can
 prove safe managed-section updates. It never commits or pushes.
+
+See the [autonomous multi-repository bootstrap case study](docs/case_studies/autonomous_multi_repo_bootstrap.md)
+for an evidence-based example of review-driven migration across three
+repositories.

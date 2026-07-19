@@ -41,3 +41,16 @@ The repaired lifecycle, bundled schema vocabulary checks, fail-closed sidecar
 behavior, mutable manifest exclusions, bootstrap lifecycle, and sync refusal
 were independently checked with no ML operation. The acceptance verdict is
 **accept**; see `reports/core_v0_1_review.md`.
+
+## 2026-07-19 — Autonomous multi-repo case study
+
+Documented the evidence-backed Core extraction, generative adapter integration,
+classical scaffold reviews and current unaccepted boundary. Documentation only;
+no ML or repository publication operation ran.
+
+## 2026-07-19 — Independent multi-repo case-study review
+
+Commit/event claims and the 1:31:14.391005 evidence-window arithmetic were
+confirmed. Review requires correction of an unrecorded specialist
+start/interruption claim, an unverified user-observation sentence, and mojibake
+arrows. See `reports/autonomous_multi_repo_bootstrap_review.md`.
