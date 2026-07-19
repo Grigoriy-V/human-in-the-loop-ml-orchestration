@@ -12,8 +12,16 @@ Use a metadata file for the first ledger event:
 python tools/agent_ledger.py start --metadata-file task-start.json
 ```
 
-Core v0.1 uses a bundled validator for the schema vocabulary shipped here
+Core v0.2 uses bundled validators for the schema vocabulary shipped here
 (`required`, types, properties, arrays, enums, patterns, constants and the
 conditional forms used by the ledger). It is not a claim of full Draft 2020-12
 implementation. A stale `.lock` sidecar fails closed; remove it only after
 confirming no writer process remains.
+
+Bootstrap sources live under `templates/base` and declared adapter overlays.
+Official bootstrap requires a clean committed Core checkout. The emitted pin
+records exact source commit, managed inventory, relationships, and hashes.
+Mutable roadmaps, logs, reports, and ledgers remain project-owned.
+
+`sync_core.py --apply` is intentionally unavailable in the v0.2 candidate;
+version propagation and conflict-aware mutation remain deferred.

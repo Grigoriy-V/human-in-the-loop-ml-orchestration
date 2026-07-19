@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "adapter_type": "generic",
+  "files": [
+    {"target_path": "README.md", "core_path": "templates/base/README.md", "relationship": "base_copy"},
+    {"target_path": "AGENTS.md", "core_path": "templates/base/AGENTS.md", "relationship": "base_copy"},
+    {"target_path": ".gitignore", "core_path": "templates/base/.gitignore", "relationship": "base_copy"},
+    {"target_path": ".codex/config.toml", "core_path": "templates/base/.codex/config.toml", "relationship": "base_copy"},
+    {"target_path": ".codex/agents/luna_clerk.toml", "core_path": "templates/base/.codex/agents/luna_clerk.toml", "relationship": "base_copy"},
+    {"target_path": ".codex/agents/terra_worker.toml", "core_path": "templates/base/.codex/agents/terra_worker.toml", "relationship": "base_copy"},
+    {"target_path": ".codex/agents/sol_specialist.toml", "core_path": "templates/base/.codex/agents/sol_specialist.toml", "relationship": "base_copy"},
+    {"target_path": "VERSION", "core_path": "templates/base/VERSION", "relationship": "base_copy"},
+    {"target_path": "requirements.txt", "core_path": "templates/base/requirements.txt", "relationship": "base_copy"},
+    {"target_path": "core/task_spec.schema.json", "core_path": "templates/base/core/task_spec.schema.json", "relationship": "base_copy"},
+    {"target_path": "core/project_manifest.schema.json", "core_path": "templates/base/core/project_manifest.schema.json", "relationship": "base_copy"},
+    {"target_path": "core/orchestration_lock.schema.json", "core_path": "templates/base/core/orchestration_lock.schema.json", "relationship": "base_copy"},
+    {"target_path": "core/managed_files.json", "core_path": "templates/adapters/generic/core/managed_files.json", "relationship": "overlay_copy"},
+    {"target_path": "docs/agent_orchestration.md", "core_path": "templates/base/docs/agent_orchestration.md", "relationship": "base_copy"},
+    {"target_path": "docs/architecture.md", "core_path": "templates/base/docs/architecture.md", "relationship": "base_copy"},
+    {"target_path": "docs/lifecycle.md", "core_path": "templates/base/docs/lifecycle.md", "relationship": "base_copy"},
+    {"target_path": "docs/multi_repo_supervision.md", "core_path": "templates/base/docs/multi_repo_supervision.md", "relationship": "base_copy"},
+    {"target_path": "docs/project_adapter_contract.md", "core_path": "templates/base/docs/project_adapter_contract.md", "relationship": "base_copy"},
+    {"target_path": "docs/lesson_promotion.md", "core_path": "templates/base/docs/lesson_promotion.md", "relationship": "base_copy"},
+    {"target_path": "tools/agent_ledger.py", "core_path": "templates/base/tools/agent_ledger.py", "relationship": "base_copy"},
+    {"target_path": "tools/validate_core_pin.py", "core_path": "templates/base/tools/validate_core_pin.py", "relationship": "base_copy"},
+    {"target_path": "tools/validate_orchestration.py", "core_path": "templates/base/tools/validate_orchestration.py", "relationship": "base_copy"},
+    {"target_path": "reports/agent_execution_ledger.schema.json", "core_path": "templates/base/reports/agent_execution_ledger.schema.json", "relationship": "base_copy"},
+    {"target_path": "tests/test_scaffold.py", "core_path": "templates/base/tests/test_scaffold.py", "relationship": "base_copy"}
+  ]
+}

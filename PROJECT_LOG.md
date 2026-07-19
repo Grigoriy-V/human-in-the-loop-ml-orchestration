@@ -54,3 +54,39 @@ Commit/event claims and the 1:31:14.391005 evidence-window arithmetic were
 confirmed. Review requires correction of an unrecorded specialist
 start/interruption claim, an unverified user-observation sentence, and mojibake
 arrows. See `reports/autonomous_multi_repo_bootstrap_review.md`.
+
+## 2026-07-19 — Core v0.2.0 candidate technical acceptance
+
+The 9-test Core suite, 60-file manifest, committed-snapshot bootstrap matrix,
+generic/classical target suites, pins, lifecycle, experiment contract, and
+sync refusal passed independent review. Technical verdict: **accept**. See
+`reports/core_v0_2_candidate.md`.
+
+## 2026-07-19 — Core v0.2 candidate template promotion
+
+Bootstrap project sources moved into canonical `templates/base` plus declared
+`generic` and `classical_ml` overlays. Clean-commit provenance, exact managed
+inventories, target-local pin validation, mutable boundaries, overlay
+separation, PowerShell metadata-file lifecycle, and fail-closed negatives were
+implemented.
+
+Nine Core tests passed. From a separate committed snapshot, the generic target
+passed 3/3 tests and the classical target passed 13/13, including its
+audit-grade experiment contract. Core and target validators passed; dirty
+source and sync `--apply` refused without mutation. Decision: ready for
+independent review as a v0.2.0 candidate, not accepted or frozen as v1.0. See
+`reports/core_v0_2_candidate.md`.
+
+No data, ML, network, commit, or push operation ran.
+
+## 2026-07-19 — Core v0.2.0 candidate accepted
+
+Supervisor events `5d407234-db43-484c-86e9-7d6d61884765` and
+`5714c98f-e1d2-48c9-be15-46bdf9de05e3` accepted the implementation and its
+independent technical review. The accepted scope is the v0.2.0 candidate, not
+a v1.0 freeze.
+
+The next milestone is a separate clean-commit release gate before any v1.0
+freeze decision. `sync_core.py --apply` remains deferred and unavailable. No
+additional test suite, ML, data, network, tag, or push operation ran during
+this closeout.

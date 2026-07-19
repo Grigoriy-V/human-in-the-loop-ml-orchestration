@@ -1,38 +1,53 @@
 # Human-in-the-Loop Orchestration Core
 
-Core v0.1 is a small, project-local foundation for supervised agent work. It
-provides a ledger, bounded task contract, routing profiles, validation, and a
-safe bootstrap path. It is intentionally independent of any ML framework or
-dataset.
+Core v0.2 is a candidate release for supervised, auditable project agents. It
+provides generic lifecycle governance, routing profiles, append-only agent
+evidence, canonical bootstrap templates, explicit adapter overlays, and
+machine-verifiable source provenance. It has no ML framework, dataset, GPU, or
+network dependency.
 
-## Boundaries
+## Declared adapters
 
-Core owns the generic lifecycle and its templates. A project adapter owns its
-domain rules, data policy, experiments, reports, and decisions. A human
-approves direction and any long-running or consequential operation.
+- `generic`: universal orchestration-only scaffold. It contains no domain or
+  ML experiment ledger.
+- `classical_ml`: generic base plus classical-ML rules, human-gated long-run
+  policy, and the audit-grade experiment helper/schema/tests.
 
-## Quick validation (no GPU)
+Bootstrap reads project files only from `templates/base` and the selected
+`templates/adapters/<type>` overlay. Mutable roadmaps, logs, reports, and
+JSONL ledgers are emitted but excluded from managed pin coverage.
 
-Python 3.11+ is required; Core v0.1 has no runtime dependencies. Run:
+## Validation
 
 ```powershell
 python -m unittest discover -s tests -v
+python tools/agent_ledger.py validate
 python tools/validate_orchestration.py
-python tools/bootstrap_project.py --dry-run --target <empty-directory> --adapter-type example --adapter-name Example
+git diff --check
 ```
 
-For a Windows-safe first ledger append, put the start metadata JSON in a file
-and run `python tools/agent_ledger.py start --metadata-file task-start.json`.
-Avoid shell-embedded JSON: it is easy to quote incorrectly.
+Official bootstrap requires a clean committed Core checkout and records its
+exact commit and hashes. From such a checkout:
 
-No GPU, dataset, training, evaluation, or network call is used.
+```powershell
+python tools/bootstrap_project.py --target <new-directory> --adapter-type generic --adapter-name Example
+python tools/bootstrap_project.py --target <new-directory> --adapter-type classical_ml --adapter-name Example
+```
 
-## Limitations
+The test suite creates an isolated committed Core snapshot for positive
+bootstrap tests. There is no dirty-source bypass.
 
-v0.1 bootstrap is deliberately conservative. `sync_core.py` validates and
-prints a dry-run only; it does not mutate adapters until a future release can
-prove safe managed-section updates. It never commits or pushes.
+For the first ledger event, use a metadata file:
 
-See the [autonomous multi-repository bootstrap case study](docs/case_studies/autonomous_multi_repo_bootstrap.md)
-for an evidence-based example of review-driven migration across three
-repositories.
+```powershell
+python tools/agent_ledger.py start --metadata-file task-start.json
+```
+
+## Candidate boundary
+
+This is a v0.2 candidate, not a v1.0 freeze. `sync_core.py` remains dry-run
+only. `--apply` intentionally returns exit 2 without mutation; conflict-aware
+version propagation and apply are deferred to a later reviewed milestone.
+
+See the [v0.2 technical report](reports/core_v0_2_candidate.md) and the
+[multi-repository bootstrap case study](docs/case_studies/autonomous_multi_repo_bootstrap.md).

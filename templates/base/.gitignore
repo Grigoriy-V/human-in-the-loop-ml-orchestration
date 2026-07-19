@@ -1,0 +1,11 @@
+.codex/*
+!.codex/config.toml
+!.codex/agents/
+!.codex/agents/*.toml
+.agents/
+__pycache__/
+*.py[cod]
+.venv/
+outputs/
+artifacts/
+reports/*.jsonl.lock

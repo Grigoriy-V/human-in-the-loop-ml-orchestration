@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "adapters": {
+    "generic": {
+      "managed_manifest": "templates/adapters/generic/core/managed_files.json",
+      "mutable_files": [
+        {
+          "target_path": "PROJECT_LOG.md",
+          "core_path": "templates/base/PROJECT_LOG.md",
+          "mode": "copy"
+        },
+        {
+          "target_path": "PROJECT_ROADMAP.md",
+          "core_path": "templates/base/PROJECT_ROADMAP.md",
+          "mode": "copy"
+        },
+        {
+          "target_path": "reports/agent_execution_ledger.jsonl",
+          "core_path": null,
+          "mode": "empty"
+        }
+      ]
+    },
+    "classical_ml": {
+      "managed_manifest": "templates/adapters/classical_ml/core/managed_files.json",
+      "mutable_files": [
+        {
+          "target_path": "PROJECT_LOG.md",
+          "core_path": "templates/base/PROJECT_LOG.md",
+          "mode": "copy"
+        },
+        {
+          "target_path": "PROJECT_ROADMAP.md",
+          "core_path": "templates/base/PROJECT_ROADMAP.md",
+          "mode": "copy"
+        },
+        {
+          "target_path": "reports/agent_execution_ledger.jsonl",
+          "core_path": null,
+          "mode": "empty"
+        },
+        {
+          "target_path": "ML_PROJECT_ROADMAP.md",
+          "core_path": "templates/adapters/classical_ml/ML_PROJECT_ROADMAP.md",
+          "mode": "copy"
+        },
+        {
+          "target_path": "reports/experiment_ledger.jsonl",
+          "core_path": null,
+          "mode": "empty"
+        }
+      ]
+    }
+  }
+}
