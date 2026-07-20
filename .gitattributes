@@ -1,4 +1,4 @@
-# Keep immutable Core and template text bytes stable across every checkout.
+# Keep repository text bytes stable across Windows and Unix checkouts.
 * text=auto eol=lf
 
 # Never line-ending-convert common binary payloads.

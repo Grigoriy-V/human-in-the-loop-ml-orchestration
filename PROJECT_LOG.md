@@ -1,134 +1,60 @@
 # Project Log
 
-## 2026-07-19 — Core v0.1 build
+This file records important completed milestones and decisions. Add one dated
+entry after a material result, not after every task or test. Keep Outcome and
+Decision short and link to detailed evidence when needed.
 
-The standalone Core was created and verified with no ML operation, dataset,
-training, evaluation, GPU, commit, or push. Five targeted unit tests passed;
-the validator and empty-ledger validation passed. See
-`reports/core_v0_1_build.md`.
+## 2026-07-20: Orchestration redesign and repository audit
 
-## 2026-07-19 — Bootstrap repair
+### Outcome
 
-Windows first-start locking was repaired and seven targeted tests passed. The
-real Core ledger remains empty for the independent first reviewer event.
+The human-supervisor-worker model, guaranteed context rules, simplified logs,
+roadmap, PROJECT_LOG, and minimal repository foundation were discussed. The
+generative and classical ML repositories were audited read-only; detailed
+evidence is in `workbench/ml_repositories_orchestration_audit.md`.
 
-## 2026-07-19 — Acceptance rework
+### Decision
 
-Lifecycle, bundled schema checks, fail-closed atomic locking, and immutable
-manifest ownership were reworked. Eight targeted tests and validator checks
-passed; no ML operation ran.
+Use Sol as supervisor, Terra at `medium` for autonomous engineering, and Luna
+only for substantial deterministic work. Use one future `work_log.py` with
+separate agent and ML journals. Do not build token accounting, automatic sync,
+or domain-specific log schemas.
 
-## 2026-07-19 — Core v0.1 accepted and frozen
+## 2026-07-20: Clean Core foundation candidate
 
-Supervisor accepted Core v0.1. The next approved step is a separate sklearn
-adapter bootstrap followed by umbrella-supervisor verification; neither ran.
+### Outcome
 
-## 2026-07-19 — Independent Core v0.1 review
+Created the new active `AGENTS.md`, config, agent profiles, README, roadmap,
+and project log. Moved the v0.2 implementation, templates, adapters, tools,
+tests, schemas, manifests, reports, and documentation to `old/v0_2/`.
 
-No-ML review checks ran: seven targeted tests, validator, ledger validation,
-bootstrap/sync smoke, manifest tamper negative, and an invalid-ledger fixture.
-The fixture was incorrectly accepted and persisted in an isolated temporary
-ledger, so the review verdict is **changes required**. See
-`reports/core_v0_1_review.md`.
+The active root now contains the foundation candidate, empty tracked `docs/`,
+`tools/`, and `tests/` directories, two empty work journals, and the Core
+workbench. The active rules were corrected to make repository scope, supervisor
+accountability, roadmap discipline, and the inactive logging state explicit.
 
-The post-review helper validation additionally rejected its own normal
-started/completed lifecycle as a duplicate start; this is included in the
-same report.
+### Decision
 
-## 2026-07-19 — Core v0.1 acceptance re-review
+Treat `old/v0_2/` as historical reference, not active instructions or
+implementation. Explicitly accept the foundation before selecting the next
+development step. Bootstrap and adapter work remain deferred.
 
-The repaired lifecycle, bundled schema vocabulary checks, fail-closed sidecar
-behavior, mutable manifest exclusions, bootstrap lifecycle, and sync refusal
-were independently checked with no ML operation. The acceptance verdict is
-**accept**; see `reports/core_v0_1_review.md`.
+## 2026-07-20: Minimal foundation accepted
 
-## 2026-07-19 — Autonomous multi-repo case study
+### Outcome
 
-Documented the evidence-backed Core extraction, generative adapter integration,
-classical scaffold reviews and current unaccepted boundary. Documentation only;
-no ML or repository publication operation ran.
+A fresh Terra worker received only the automatic `AGENTS.md` contract and its
+selected profile. It correctly reported Terra `medium`, the human and
+supervisor boundaries, the autonomous execution loop, real stop conditions,
+non-automatic context sources, and inactive logging. It returned once without
+editing files, running tests, invoking logging, delegating, or requesting
+routine approval.
 
-## 2026-07-19 — Independent multi-repo case-study review
+The active configuration uses Sol supervisor `medium`, Terra `medium`, Luna
+`none`, and optional Sol specialist `medium`.
 
-Commit/event claims and the 1:31:14.391005 evidence-window arithmetic were
-confirmed. Review requires correction of an unrecorded specialist
-start/interruption claim, an unverified user-observation sentence, and mojibake
-arrows. See `reports/autonomous_multi_repo_bootstrap_review.md`.
+### Decision
 
-## 2026-07-19 — Core v0.2.0 candidate technical acceptance
-
-The 9-test Core suite, 60-file manifest, committed-snapshot bootstrap matrix,
-generic/classical target suites, pins, lifecycle, experiment contract, and
-sync refusal passed independent review. Technical verdict: **accept**. See
-`reports/core_v0_2_candidate.md`.
-
-## 2026-07-19 — Core v0.2.0 clean-commit release gate
-
-A clean local Windows clone of committed HEAD failed immutable-manifest
-validation: all 60 hashes differed because checkout CRLF bytes did not match
-the LF working-tree hashes used to build the manifest. Release verdict:
-**changes required**. See `reports/core_v0_2_release_gate.md`.
-
-## 2026-07-19 — Core v0.2 candidate template promotion
-
-Bootstrap project sources moved into canonical `templates/base` plus declared
-`generic` and `classical_ml` overlays. Clean-commit provenance, exact managed
-inventories, target-local pin validation, mutable boundaries, overlay
-separation, PowerShell metadata-file lifecycle, and fail-closed negatives were
-implemented.
-
-Nine Core tests passed. From a separate committed snapshot, the generic target
-passed 3/3 tests and the classical target passed 13/13, including its
-audit-grade experiment contract. Core and target validators passed; dirty
-source and sync `--apply` refused without mutation. Decision: ready for
-independent review as a v0.2.0 candidate, not accepted or frozen as v1.0. See
-`reports/core_v0_2_candidate.md`.
-
-No data, ML, network, commit, or push operation ran.
-
-## 2026-07-19 — Core v0.2.0 candidate accepted
-
-Supervisor events `5d407234-db43-484c-86e9-7d6d61884765` and
-`5714c98f-e1d2-48c9-be15-46bdf9de05e3` accepted the implementation and its
-independent technical review. The accepted scope is the v0.2.0 candidate, not
-a v1.0 freeze.
-
-The next milestone is a separate clean-commit release gate before any v1.0
-freeze decision. `sync_core.py --apply` remains deferred and unavailable. No
-additional test suite, ML, data, network, tag, or push operation ran during
-this closeout.
-
-## 2026-07-19 — Core v0.2.0 CRLF portability rework
-
-Added canonical LF checkout policy to Core and generated adapters after the
-clean-clone release gate found 60/60 immutable hash mismatches under
-`core.autocrlf=true`. Common binary formats are explicitly excluded from text
-and eol conversion; managed bootstrap copies remain raw-byte-preserving and
-hash-equal.
-
-The focused autocrlf clone matrix passed with a clean clone, all 62 Core
-manifest hashes, generic `25 managed / 3 mutable`, classical
-`29 managed / 5 mutable`, local and explicit pins, exact copy relations,
-CRLF-tamper rejection, and byte-stable binary handling. The full 10-test Core
-suite passed. Decision: ready for targeted independent re-review, not accepted
-as a release. Version remains `0.2.0`; sync apply remains unavailable. See
-`reports/core_v0_2_release_gate.md`.
-
-No adapter write, ML/data operation, network action, commit, tag, or push ran.
-
-## 2026-07-19 — Core v0.2.0 personal-PoC finalization
-
-Labeled v0.2.0 as an experimental personal proof of concept with nominal
-reproducibility, not a production framework or v1.0. Documented future sync as
-deterministic managed-list hash/diff first, agent invocation only for detected
-differences, and manual approval with no automatic apply.
-
-Generated roadmap ownership is now exclusive: generic has only
-`PROJECT_ROADMAP.md`, classical has only `ML_PROJECT_ROADMAP.md`, and Core
-retains `ORCHESTRATION_ROADMAP.md`. Inventories are generic
-`25 managed / 3 mutable` and classical `29 managed / 4 mutable`.
-
-The full 10-test Core suite and focused autocrlf clean-clone matrix each passed
-once. Decision: hand off the dirty PoC state for one supervisor acceptance and
-one later commit. Version remains `0.2.0`; no adapter write, production commit,
-tag, push, network, ML, or data operation ran.
+Accept the minimal foundation as the active Core baseline. Keep
+`tools/work_log.py` as the next candidate; its implementation remains a
+separate step.

@@ -6,8 +6,6 @@ The human controls project direction. Discussion, questions, ideas, candidates,
 and roadmap edits do not authorize implementation. Commands such as "start
 work", "continue work", or "follow the plan" authorize execution of the
 current agreed step within its existing boundaries and human gates.
-The human is not required to provide an implementation-ready specification or
-select an agent; the supervisor turns the accepted direction into a task.
 
 ## Roles and routing
 
@@ -18,11 +16,8 @@ select an agent; the supervisor turns the accepted direction into a task.
   debugging, tests, approved evaluation, and other hands-on engineering.
 - Luna at `none` handles substantial deterministic extraction, inventory,
   formatting, reporting, and safe existing-script execution.
-- Sol specialist at `medium` is optional for an explicitly justified complex or
+- Sol specialist at `high` is optional for an explicitly justified complex or
   high-risk question or independent review.
-
-The supervisor is accountable for task clarity, correct routing, useful
-boundaries, avoiding unnecessary handoffs, and reviewing the actual result.
 
 Delegate only when it separates strategy from execution or costs less than
 direct supervisor work. Use one worker for overlapping mutable files or
@@ -44,11 +39,10 @@ worker reads only the additional project files required by its task.
 
 ## Worker task and autonomy
 
-A substantial task states the repository and workdir, scope, goal, relevant
-current state, mandatory files, invariants, forbidden actions and human gates,
-acceptance criteria, and final report requirements. Describe the result and
-boundaries; do not predict every command or file unless it is a real safety or
-protocol constraint.
+A substantial task states the goal, relevant current state, mandatory files,
+invariants, forbidden actions and human gates, acceptance criteria, and final
+report requirements. Describe the result and boundaries; do not predict every
+command or file unless it is a real safety or protocol constraint.
 
 Inside those boundaries, the worker owns:
 
@@ -70,31 +64,20 @@ Stop only when the next action requires:
 
 These are boundary stops, not routine debugging stops.
 
-## Roadmap
-
-Use one canonical roadmap and work on one approved step at a time. The
-supervisor reads it before selecting or changing project work. Do not silently
-skip, merge, invent, or expand steps. When a step closes, record its result,
-evidence, decision, and limitation, then discuss the next transition.
-
 ## Evidence and logs
 
 The worker runs proportional checks and reports the result, changed files,
 checks, artifacts or metrics, limitations, and skipped checks.
 
-Logging is inactive until `tools/work_log.py` exists. Do not hand-edit the
-empty journals or treat the missing tool as a task failure.
-
-Once implemented, the worker invokes `tools/work_log.py` once at completion or
-stop. The tool writes two separate journals:
+One `tools/work_log.py` implementation writes two separate journals:
 
 - `reports/agent_tasks.jsonl`: one final worker-attempt record;
 - `reports/ml_work.jsonl`: one meaningful ML-work record.
 
 Do not create start or reviewed lifecycle events. Detailed commands, metrics,
-hashes, protocols, and artifacts belong in linked reports. After logging is
-activated, a tool failure is reported with the primary result; it does not
-create a repair chain unless logging is the assigned task.
+hashes, protocols, and artifacts belong in linked reports. If the logging tool
+is unavailable or fails, report that with the primary result; do not create a
+repair chain unless logging is the assigned task.
 
 `PROJECT_LOG.md` records important accepted milestones and decisions. The
 roadmap records current direction and future work. Small safe reports and both

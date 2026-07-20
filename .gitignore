@@ -1,4 +1,4 @@
-# Keep only the reproducible Codex policy files.
+# Keep generated and local runtime files out of the minimal repository.
 .codex/*
 !.codex/config.toml
 !.codex/agents/
